@@ -25,9 +25,12 @@ class BottomNavBar extends ConsumerWidget {
 
     return NavigationBar(
       selectedIndex: selectedIndex,
-      onDestinationSelected: ref.read(bottomNavIndexProvider.notifier).select,
+      onDestinationSelected: (index) {
+        ref.read(bottomNavIndexProvider.notifier).select(index);
+        if (index == 3) Scaffold.of(context).openDrawer();
+      },
       height: 72,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       indicatorColor: AppColors.lightGreen.withValues(alpha: 0.18),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       destinations: const [

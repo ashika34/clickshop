@@ -42,13 +42,16 @@ class _SkeletonBoxState extends State<SkeletonBox>
 
   @override
   Widget build(BuildContext context) {
+    final skeletonColor = Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF343936)
+        : const Color(0xFFE4E8E4);
     return FadeTransition(
       opacity: _opacity,
       child: Container(
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-          color: const Color(0xFFE4E8E4),
+          color: skeletonColor,
           borderRadius: BorderRadius.circular(widget.borderRadius),
         ),
       ),

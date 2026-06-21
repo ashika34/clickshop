@@ -58,9 +58,9 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
             ? const <String>['']
             : product.galleryImages;
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9F8),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF8F9F8),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             surfaceTintColor: Colors.transparent,
             elevation: 0,
             scrolledUnderElevation: 0,
@@ -240,9 +240,9 @@ class _ProductDetailSkeleton extends StatelessWidget {
     final galleryHeight = (screenSize.height * 0.40).clamp(320.0, 480.0);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9F8),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9F8),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         toolbarHeight: 76,
@@ -295,9 +295,9 @@ class _ProductDetailSkeleton extends StatelessWidget {
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(28),
                     ),
                   ),
@@ -342,7 +342,7 @@ class _PurchaseBarSkeleton extends StatelessWidget {
   Widget build(BuildContext context) => SafeArea(
     top: false,
     child: Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         child: const SkeletonBox(
@@ -389,10 +389,10 @@ class _CircleActionButton extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: 46,
     height: 46,
-    decoration: const BoxDecoration(
-      color: Colors.white,
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
       shape: BoxShape.circle,
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
           color: Color(0x1A000000),
           blurRadius: 16,
@@ -402,7 +402,11 @@ class _CircleActionButton extends StatelessWidget {
     ),
     child: IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, color: const Color(0xFF17191C), size: 25),
+      icon: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.onSurface,
+        size: 25,
+      ),
     ),
   );
 }
@@ -452,9 +456,9 @@ class _ProductInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,8 +474,8 @@ class _ProductInformation extends StatelessWidget {
         SizedBox(height: 6),
         Text(
           product.title,
-          style: const TextStyle(
-            color: Color(0xFF17191C),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 23,
             height: 1.15,
             fontWeight: FontWeight.w800,
@@ -484,8 +488,8 @@ class _ProductInformation extends StatelessWidget {
         SizedBox(height: 20),
         Text(
           product.description,
-          style: const TextStyle(
-            color: Color(0xFF303338),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 15,
             height: 1.45,
           ),
@@ -494,7 +498,7 @@ class _ProductInformation extends StatelessWidget {
         Text(
           'Product Details',
           style: TextStyle(
-            color: Color(0xFF17191C),
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
@@ -632,6 +636,7 @@ class _SpecificationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final dimensions = product.dimensions;
     final specifications = [
       ('Brand', product.brand),
@@ -663,8 +668,10 @@ class _SpecificationList extends StatelessWidget {
                     width: 110,
                     child: Text(
                       specification.$1,
-                      style: const TextStyle(
-                        color: Color(0xFF303338),
+                      style: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white
+                            : const Color(0xFF303338),
                         fontSize: 14.5,
                       ),
                     ),
@@ -675,8 +682,10 @@ class _SpecificationList extends StatelessWidget {
                       specification.$2,
                       style: TextStyle(
                         color: inStock
-                            ? AppColors.darkGreen
-                            : const Color(0xFF202328),
+                            ? (isDarkMode ? Colors.white : AppColors.darkGreen)
+                            : (isDarkMode
+                                  ? Colors.white
+                                  : const Color(0xFF202328)),
                         fontSize: 14.5,
                         fontWeight: inStock ? FontWeight.w600 : FontWeight.w400,
                       ),
@@ -699,7 +708,7 @@ class _PurchaseBar extends StatelessWidget {
   Widget build(BuildContext context) => SafeArea(
     top: false,
     child: Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         child: SizedBox(

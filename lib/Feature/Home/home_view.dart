@@ -3,6 +3,7 @@ import 'package:click_shop/Feature/Home/My cart/viewmodel/cart_view_model.dart';
 import 'package:click_shop/Feature/Home/Productlisting/view/product_listing_view.dart';
 import 'package:click_shop/Feature/Home/widgets/bottom_nav_bar.dart';
 import 'package:click_shop/Feature/Home/widgets/home_slider.dart';
+import 'package:click_shop/Feature/Home/widgets/profile.dart';
 import 'package:click_shop/config/app_theme.dart';
 import 'package:click_shop/config/app_route.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,8 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItemCount = ref.watch(cartItemCountProvider);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawer: const ProfileDrawer(),
       appBar: _HomeAppBar(cartItemCount: cartItemCount),
       bottomNavigationBar: const BottomNavBar(),
       body: LayoutBuilder(
@@ -46,8 +48,8 @@ class HomeView extends ConsumerWidget {
                       children: [
                         Text(
                           'Categories',
-                          style: const TextStyle(
-                            color: Color(0xFF17191C),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                           ),
@@ -94,7 +96,7 @@ class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         bottom: false,
         child: LayoutBuilder(
@@ -128,7 +130,7 @@ class _TopActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(
+        Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +140,7 @@ class _TopActions extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Color(0xFF15171A),
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 19,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.2,
@@ -150,7 +152,7 @@ class _TopActions extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Color(0xFF777A82),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 13,
                   fontWeight: FontWeight.w400,
                 ),
@@ -211,7 +213,11 @@ class _HeaderIcon extends StatelessWidget {
       onPressed: onPressed,
       constraints: const BoxConstraints.tightFor(width: 40, height: 40),
       padding: const EdgeInsets.all(7),
-      icon: Icon(icon, size: 26, color: const Color(0xFF15171A)),
+      icon: Icon(
+        icon,
+        size: 26,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
   }
 }

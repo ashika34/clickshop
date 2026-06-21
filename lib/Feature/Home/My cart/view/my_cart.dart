@@ -15,17 +15,17 @@ class MyCart extends ConsumerWidget {
     final subtotal = ref.watch(cartSubtotalProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9F8),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0,
         centerTitle: false,
-        title: const Text(
+        title: Text(
           'My Cart',
           style: TextStyle(
-            color: Color(0xFF17191C),
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.w800,
           ),
@@ -33,7 +33,7 @@ class MyCart extends ConsumerWidget {
         leading: IconButton(
           onPressed: context.pop,
           icon: const Icon(Icons.arrow_back_rounded),
-          color: const Color(0xFF17191C),
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
       bottomNavigationBar: items.isEmpty
@@ -52,8 +52,12 @@ class MyCart extends ConsumerWidget {
                     itemCount: items.length,
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: 14),
-                    itemBuilder: (context, index) =>
-                        _CartItemCard(item: items[index]),
+                    itemBuilder: (context, index) => _CartItemCard(
+                      item: items[index],
+                      onDelete: () => ref
+                          .read(cartViewModelProvider.notifier)
+                          .removeAt(index),
+                    ),
                   ),
                 ),
               ),
@@ -63,9 +67,10 @@ class MyCart extends ConsumerWidget {
 }
 
 class _CartItemCard extends StatelessWidget {
-  const _CartItemCard({required this.item});
+  const _CartItemCard({required this.item, required this.onDelete});
 
   final CartItemModel item;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +79,7 @@ class _CartItemCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: const Color(0xFFE8ECE8)),
           boxShadow: const [
@@ -86,13 +91,14 @@ class _CartItemCard extends StatelessWidget {
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 96,
               height: 96,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F6F3),
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: item.image.isEmpty
@@ -129,8 +135,8 @@ class _CartItemCard extends StatelessWidget {
                     item.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xFF1D2024),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 16,
                       height: 1.2,
                       fontWeight: FontWeight.w700,
@@ -146,6 +152,17 @@ class _CartItemCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+            IconButton(
+              tooltip: 'Remove from cart',
+              onPressed: onDelete,
+              visualDensity: VisualDensity.compact,
+              constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.black,
+                size: 23,
               ),
             ),
           ],
@@ -165,7 +182,7 @@ class _OrderSummary extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Material(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 12,
         shadowColor: const Color(0x18000000),
         child: Padding(
@@ -235,13 +252,16 @@ class _SummaryRow extends StatelessWidget {
     children: [
       Text(
         label,
-        style: const TextStyle(color: Color(0xFF656A71), fontSize: 15),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontSize: 15,
+        ),
       ),
       const Spacer(),
       Text(
         value,
-        style: const TextStyle(
-          color: Color(0xFF1D2024),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
           fontSize: 15,
           fontWeight: FontWeight.w700,
         ),

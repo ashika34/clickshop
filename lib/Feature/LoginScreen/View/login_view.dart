@@ -72,7 +72,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     final loginState = ref.watch(_loginUiProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final headerHeight = (constraints.maxHeight * 0.34).clamp(
@@ -114,7 +114,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       .textTheme
                                       .headlineMedium
                                       ?.copyWith(
-                                        color: const Color(0xFF202124),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontWeight: FontWeight.w700,
                                       ),
                                 ),
@@ -244,7 +246,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
       labelText: label,
       prefixIcon: Icon(icon),
       filled: true,
-      fillColor: const Color(0xFFF7F9F7),
+      fillColor: Theme.of(context).colorScheme.surfaceContainer,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: Color(0xFFE1E7E2)),

@@ -67,7 +67,7 @@ class _CategoryCard extends StatelessWidget {
             width: 76,
             height: 76,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
               boxShadow: const [
                 BoxShadow(
@@ -91,8 +91,8 @@ class _CategoryCard extends StatelessWidget {
             softWrap: true,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFF555960),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontSize: 12.5,
               fontWeight: FontWeight.w500,
             ),

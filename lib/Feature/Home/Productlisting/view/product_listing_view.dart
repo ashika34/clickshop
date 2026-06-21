@@ -19,10 +19,10 @@ class ProductListingView extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const Text(
+            Text(
               'Popular Products',
               style: TextStyle(
-                color: Color(0xFF17191C),
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
               ),
@@ -100,7 +100,7 @@ class _ProductCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFFE9ECE9)),
       ),
@@ -140,7 +140,7 @@ class _ProductCard extends StatelessWidget {
       onTap: () => context.push(AppRoutes.productDetailPath(product.id)),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: const Color(0xFFE9ECE9)),
           boxShadow: const [
@@ -161,7 +161,7 @@ class _ProductCard extends StatelessWidget {
                   children: [
                     Positioned.fill(
                       child: ColoredBox(
-                        color: const Color(0xFFF7F9F7),
+                        color: Theme.of(context).colorScheme.surfaceContainer,
                         child: Image.network(
                           product.thumbnail,
                           fit: BoxFit.contain,
@@ -198,8 +198,8 @@ class _ProductCard extends StatelessWidget {
                       product.brand,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFF83878E),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -209,8 +209,8 @@ class _ProductCard extends StatelessWidget {
                       product.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFF1D2024),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
@@ -239,8 +239,10 @@ class _ProductCard extends StatelessWidget {
                             '(${product.reviewCount})',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Color(0xFF83878E),
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               fontSize: 12.5,
                               fontWeight: FontWeight.w500,
                             ),

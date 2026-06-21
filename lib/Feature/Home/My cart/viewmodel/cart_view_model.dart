@@ -30,6 +30,17 @@ class CartViewModel extends Notifier<List<CartItemModel>> {
 
   void addProduct(ProductDetailsModel product) {
     state = [...state, CartItemModel.fromProduct(product)];
+    _persistCart();
+  }
+
+  void removeAt(int index) {
+    if (index < 0 || index >= state.length) return;
+    final updatedCart = [...state]..removeAt(index);
+    state = updatedCart;
+    _persistCart();
+  }
+
+  void _persistCart() {
     unawaited(
       ref
           .read(localStorageProvider)
