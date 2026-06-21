@@ -1,6 +1,7 @@
 import 'package:click_shop/Feature/Home/Productdetail/viewmodel/product_detailstate_viewmodel.dart';
 import 'package:click_shop/Feature/Home/Productdetail/model/product_details_model.dart';
 import 'package:click_shop/Feature/Home/Productdetail/viewmodel/product_details_view_model.dart';
+import 'package:click_shop/Feature/Home/My cart/viewmodel/cart_view_model.dart';
 import 'package:click_shop/config/app_route.dart';
 import 'package:click_shop/config/app_theme.dart';
 import 'package:click_shop/core/widgets/skeleton_box.dart';
@@ -44,6 +45,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
   @override
   Widget build(BuildContext context) {
     final detailState = ref.watch(productDetailUiProvider);
+    final cartItemCount = ref.watch(cartItemCountProvider);
     final productState = ref.watch(
       productDetailsViewModelProvider(widget.productId),
     );
@@ -78,23 +80,28 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
               ),
             ),
             actions: [
-              _CircleActionButton(icon: Icons.share_outlined, onPressed: () {}),
-              const SizedBox(width: 10),
-              _CircleActionButton(
-                icon: detailState.isFavorite
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_border_rounded,
-                color: detailState.isFavorite
-                    ? Colors.red
-                    : const Color(0xFF17191C),
-                onPressed: ref
-                    .read(productDetailUiProvider.notifier)
-                    .toggleFavorite,
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _CircleActionButton(
+                    icon: Icons.shopping_cart_outlined,
+                    onPressed: () => context.push(AppRoutes.cart),
+                  ),
+                  if (cartItemCount > 0)
+                    Positioned(
+                      right: -4,
+                      top: -5,
+                      child: _CartBadge(count: cartItemCount),
+                    ),
+                ],
               ),
               const SizedBox(width: 20),
             ],
           ),
-          bottomNavigationBar: const _PurchaseBar(),
+          bottomNavigationBar: _PurchaseBar(
+            onAddToCart: () =>
+                ref.read(cartViewModelProvider.notifier).addProduct(product),
+          ),
           body: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
@@ -249,8 +256,6 @@ class _ProductDetailSkeleton extends StatelessWidget {
         ),
         actions: const [
           SkeletonBox(width: 46, height: 46, borderRadius: 23),
-          SizedBox(width: 10),
-          SkeletonBox(width: 46, height: 46, borderRadius: 23),
           SizedBox(width: 20),
         ],
       ),
@@ -340,30 +345,10 @@ class _PurchaseBarSkeleton extends StatelessWidget {
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-        child: Align(
-          heightFactor: 1,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 860),
-            child: const Row(
-              children: [
-                Expanded(
-                  child: SkeletonBox(
-                    width: double.infinity,
-                    height: 54,
-                    borderRadius: 11,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: SkeletonBox(
-                    width: double.infinity,
-                    height: 54,
-                    borderRadius: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        child: const SkeletonBox(
+          width: double.infinity,
+          height: 54,
+          borderRadius: 11,
         ),
       ),
     ),
@@ -396,14 +381,9 @@ class _ProductImage extends StatelessWidget {
 }
 
 class _CircleActionButton extends StatelessWidget {
-  const _CircleActionButton({
-    required this.icon,
-    required this.onPressed,
-    this.color = const Color(0xFF17191C),
-  });
+  const _CircleActionButton({required this.icon, required this.onPressed});
   final IconData icon;
   final VoidCallback onPressed;
-  final Color color;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -422,9 +402,46 @@ class _CircleActionButton extends StatelessWidget {
     ),
     child: IconButton(
       onPressed: onPressed,
-      icon: Icon(icon, color: color, size: 25),
+      icon: Icon(icon, color: const Color(0xFF17191C), size: 25),
     ),
   );
+}
+
+class _CartBadge extends StatelessWidget {
+  const _CartBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = count > 99 ? '99+' : '$count';
+    return Container(
+      constraints: const BoxConstraints(minWidth: 21, minHeight: 21),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE53935),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white, width: 2),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x26000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          height: 1,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
 }
 
 class _ProductInformation extends StatelessWidget {
@@ -675,7 +692,9 @@ class _SpecificationList extends StatelessWidget {
 }
 
 class _PurchaseBar extends StatelessWidget {
-  const _PurchaseBar();
+  const _PurchaseBar({required this.onAddToCart});
+
+  final VoidCallback onAddToCart;
   @override
   Widget build(BuildContext context) => SafeArea(
     top: false,
@@ -683,39 +702,18 @@ class _PurchaseBar extends StatelessWidget {
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-        child: Align(
-          alignment: Alignment.center,
-          heightFactor: 1,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 860),
-            child: SizedBox(
-              height: 54,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _PurchaseButton(
-                      icon: Icons.bolt_rounded,
-                      label: 'Buy Now',
-                      onPressed: _emptyAction,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _PurchaseButton(
-                      icon: Icons.shopping_cart_outlined,
-                      label: 'Add to Cart',
-                      onPressed: _emptyAction,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 54,
+          child: _PurchaseButton(
+            icon: Icons.shopping_cart_outlined,
+            label: 'Add to Cart',
+            onPressed: onAddToCart,
           ),
         ),
       ),
     ),
   );
-  static void _emptyAction() {}
 }
 
 class _PurchaseButton extends StatelessWidget {
