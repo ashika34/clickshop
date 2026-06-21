@@ -24,7 +24,7 @@ class _SplashViewState extends ConsumerState<SplashView> {
   Widget build(BuildContext context) {
     ref.listen(splashViewModelProvider, (previous, next) {
       if (next.isComplete && previous?.isComplete != true && mounted) {
-        context.go(AppRoutes.home);
+        context.go(AppRoutes.login);
       }
     });
 

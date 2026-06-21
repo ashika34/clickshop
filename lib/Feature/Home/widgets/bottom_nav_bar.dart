@@ -1,0 +1,63 @@
+import 'package:click_shop/config/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final bottomNavIndexProvider =
+    NotifierProvider.autoDispose<BottomNavController, int>(
+      BottomNavController.new,
+    );
+
+class BottomNavController extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void select(int index) {
+    if (state != index) state = index;
+  }
+}
+
+class BottomNavBar extends ConsumerWidget {
+  const BottomNavBar({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedIndex = ref.watch(bottomNavIndexProvider);
+
+    return NavigationBar(
+      selectedIndex: selectedIndex,
+      onDestinationSelected: ref.read(bottomNavIndexProvider.notifier).select,
+      height: 72,
+      backgroundColor: Colors.white,
+      indicatorColor: AppColors.lightGreen.withValues(alpha: 0.18),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home_rounded, color: AppColors.darkGreen),
+          label: 'Home',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.grid_view_outlined),
+          selectedIcon: Icon(
+            Icons.grid_view_rounded,
+            color: AppColors.darkGreen,
+          ),
+          label: 'Categories',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.receipt_long_outlined),
+          selectedIcon: Icon(
+            Icons.receipt_long_rounded,
+            color: AppColors.darkGreen,
+          ),
+          label: 'Orders',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline_rounded),
+          selectedIcon: Icon(Icons.person_rounded, color: AppColors.darkGreen),
+          label: 'Profile',
+        ),
+      ],
+    );
+  }
+}
