@@ -1,6 +1,7 @@
 import 'package:click_shop/Feature/Home/Category/model/category_model.dart';
 import 'package:click_shop/Feature/Home/Category/viewmodel/category_view_model.dart';
 import 'package:click_shop/config/app_theme.dart';
+import 'package:click_shop/core/widgets/skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +23,22 @@ class CategoryView extends ConsumerWidget {
           itemBuilder: (context, index) =>
               _CategoryCard(category: items[index]),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => ListView.separated(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 5,
+          separatorBuilder: (context, index) => const SizedBox(width: 18),
+          itemBuilder: (context, index) => const SizedBox(
+            width: 82,
+            child: Column(
+              children: [
+                SkeletonBox(width: 76, height: 76, borderRadius: 20),
+                SizedBox(height: 10),
+                SkeletonBox(width: 62, height: 13, borderRadius: 6),
+              ],
+            ),
+          ),
+        ),
         error: (error, stackTrace) => Center(
           child: IconButton(
             tooltip: 'Retry categories',
