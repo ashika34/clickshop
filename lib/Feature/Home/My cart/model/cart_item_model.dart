@@ -7,6 +7,7 @@ class CartItemModel {
     required this.brand,
     required this.price,
     required this.image,
+    this.quantity = 1,
   });
 
   final int id;
@@ -14,6 +15,7 @@ class CartItemModel {
   final String brand;
   final double price;
   final String image;
+  final int quantity;
 
   factory CartItemModel.fromProduct(ProductDetailsModel product) {
     return CartItemModel(
@@ -24,6 +26,7 @@ class CartItemModel {
       image: product.thumbnail.isNotEmpty
           ? product.thumbnail
           : (product.galleryImages.isEmpty ? '' : product.galleryImages.first),
+      quantity: 1,
     );
   }
 
@@ -34,6 +37,18 @@ class CartItemModel {
       brand: json['brand'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0,
       image: json['image'] as String? ?? '',
+      quantity: ((json['quantity'] as num?)?.toInt() ?? 1).clamp(1, 9999),
+    );
+  }
+
+  CartItemModel copyWith({int? quantity}) {
+    return CartItemModel(
+      id: id,
+      name: name,
+      brand: brand,
+      price: price,
+      image: image,
+      quantity: quantity ?? this.quantity,
     );
   }
 
@@ -43,5 +58,6 @@ class CartItemModel {
     'brand': brand,
     'price': price,
     'image': image,
+    'quantity': quantity,
   };
 }

@@ -1,40 +1,9 @@
 import 'package:click_shop/config/app_route.dart';
 import 'package:click_shop/config/app_theme.dart';
+import 'package:click_shop/Feature/LoginScreen/Viewmodel/login_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
-class _LoginUiState {
-  const _LoginUiState({this.obscurePassword = true, this.isSubmitting = false});
-
-  final bool obscurePassword;
-  final bool isSubmitting;
-
-  _LoginUiState copyWith({bool? obscurePassword, bool? isSubmitting}) {
-    return _LoginUiState(
-      obscurePassword: obscurePassword ?? this.obscurePassword,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-    );
-  }
-}
-
-final _loginUiProvider =
-    NotifierProvider.autoDispose<_LoginUiController, _LoginUiState>(
-      _LoginUiController.new,
-    );
-
-class _LoginUiController extends Notifier<_LoginUiState> {
-  @override
-  _LoginUiState build() => const _LoginUiState();
-
-  void togglePasswordVisibility() {
-    state = state.copyWith(obscurePassword: !state.obscurePassword);
-  }
-
-  void setSubmitting(bool value) {
-    state = state.copyWith(isSubmitting: value);
-  }
-}
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -58,18 +27,21 @@ class _LoginViewState extends ConsumerState<LoginView> {
   Future<void> _login() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    final controller = ref.read(_loginUiProvider.notifier);
+    final controller = ref.read(loginViewModelProvider.notifier);
     controller.setSubmitting(true);
     await Future<void>.delayed(const Duration(milliseconds: 350));
 
     if (!mounted) return;
     controller.setSubmitting(false);
+    ref
+        .read(loginViewModelProvider.notifier)
+        .setUserName(_emailController.text);
     context.go(AppRoutes.home);
   }
 
   @override
   Widget build(BuildContext context) {
-    final loginState = ref.watch(_loginUiProvider);
+    final loginState = ref.watch(loginViewModelProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -135,9 +107,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                     if (email.isEmpty) {
                                       return 'Please enter your email';
                                     }
-                                    if (!email.contains('@')) {
-                                      return 'Please enter a valid email';
-                                    }
                                     return null;
                                   },
                                 ),
@@ -158,7 +127,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                               ? 'Show password'
                                               : 'Hide password',
                                           onPressed: ref
-                                              .read(_loginUiProvider.notifier)
+                                              .read(
+                                                loginViewModelProvider.notifier,
+                                              )
                                               .togglePasswordVisibility,
                                           icon: Icon(
                                             loginState.obscurePassword

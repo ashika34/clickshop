@@ -42,6 +42,14 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
     );
   }
 
+  void _goBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.home);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final detailState = ref.watch(productDetailUiProvider);
@@ -70,13 +78,7 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
               padding: const EdgeInsets.only(left: 20),
               child: _CircleActionButton(
                 icon: Icons.arrow_back_rounded,
-                onPressed: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  } else {
-                    context.go(AppRoutes.home);
-                  }
-                },
+                onPressed: _goBack,
               ),
             ),
             actions: [
@@ -202,16 +204,15 @@ class _ProductDetailViewState extends ConsumerState<ProductDetailView> {
           ),
         );
       },
-      loading: () => _ProductDetailSkeleton(
-        onBack: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.go(AppRoutes.home);
-          }
-        },
-      ),
+      loading: () => _ProductDetailSkeleton(onBack: _goBack),
       error: (error, stackTrace) => Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            tooltip: 'Back',
+            onPressed: _goBack,
+            icon: const Icon(Icons.arrow_back_rounded),
+          ),
+        ),
         body: Center(
           child: IconButton(
             tooltip: 'Retry product details',

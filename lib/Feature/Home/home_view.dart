@@ -4,6 +4,7 @@ import 'package:click_shop/Feature/Home/Productlisting/view/product_listing_view
 import 'package:click_shop/Feature/Home/widgets/bottom_nav_bar.dart';
 import 'package:click_shop/Feature/Home/widgets/home_slider.dart';
 import 'package:click_shop/Feature/Home/widgets/profile.dart';
+import 'package:click_shop/Feature/LoginScreen/Viewmodel/login_view_model.dart';
 import 'package:click_shop/config/app_theme.dart';
 import 'package:click_shop/config/app_route.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,11 @@ class HomeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItemCount = ref.watch(cartItemCountProvider);
+    final userName = ref.watch(loginViewModelProvider).displayName;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: const ProfileDrawer(),
-      appBar: _HomeAppBar(cartItemCount: cartItemCount),
+      appBar: _HomeAppBar(cartItemCount: cartItemCount, userName: userName),
       bottomNavigationBar: const BottomNavBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -46,15 +48,18 @@ class HomeView extends ConsumerWidget {
                     const SizedBox(height: 18),
                     Row(
                       children: [
-                        Text(
-                          'Categories',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
+                        Expanded(
+                          child: Text(
+                            'Categories',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
-                        const Spacer(),
                         TextButton(
                           onPressed: () {},
                           style: TextButton.styleFrom(
@@ -86,9 +91,10 @@ class HomeView extends ConsumerWidget {
 }
 
 class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _HomeAppBar({required this.cartItemCount});
+  const _HomeAppBar({required this.cartItemCount, required this.userName});
 
   final int cartItemCount;
+  final String userName;
 
   @override
   Size get preferredSize => const Size.fromHeight(76);
@@ -110,7 +116,10 @@ class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1000),
-                  child: _TopActions(cartItemCount: cartItemCount),
+                  child: _TopActions(
+                    cartItemCount: cartItemCount,
+                    userName: userName,
+                  ),
                 ),
               ),
             );
@@ -122,9 +131,10 @@ class _HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _TopActions extends StatelessWidget {
-  const _TopActions({required this.cartItemCount});
+  const _TopActions({required this.cartItemCount, required this.userName});
 
   final int cartItemCount;
+  final String userName;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +146,7 @@ class _TopActions extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hello, Ashika 👋',
+                'Hi, Welcome $userName',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

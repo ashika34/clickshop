@@ -9,27 +9,48 @@ final cartViewModelProvider =
     NotifierProvider<CartViewModel, List<CartItemModel>>(CartViewModel.new);
 
 final cartItemCountProvider = Provider<int>((ref) {
-  return ref.watch(cartViewModelProvider).length;
+  return ref
+      .watch(cartViewModelProvider)
+      .fold(0, (total, item) => total + item.quantity);
 });
 
 final cartSubtotalProvider = Provider<double>((ref) {
   return ref
       .watch(cartViewModelProvider)
-      .fold(0, (total, item) => total + item.price);
+      .fold(0, (total, item) => total + (item.price * item.quantity));
 });
 
 class CartViewModel extends Notifier<List<CartItemModel>> {
   @override
   List<CartItemModel> build() {
-    return ref
+    final savedItems = ref
         .read(localStorageProvider)
         .readCart()
         .map(CartItemModel.fromJson)
         .toList(growable: false);
+
+    final mergedItems = <int, CartItemModel>{};
+    for (final item in savedItems) {
+      final existing = mergedItems[item.id];
+      mergedItems[item.id] = existing == null
+          ? item
+          : existing.copyWith(quantity: existing.quantity + item.quantity);
+    }
+    return mergedItems.values.toList(growable: false);
   }
 
   void addProduct(ProductDetailsModel product) {
-    state = [...state, CartItemModel.fromProduct(product)];
+    final existingIndex = state.indexWhere((item) => item.id == product.id);
+    if (existingIndex == -1) {
+      state = [...state, CartItemModel.fromProduct(product)];
+    } else {
+      final updatedCart = [...state];
+      final existingItem = updatedCart[existingIndex];
+      updatedCart[existingIndex] = existingItem.copyWith(
+        quantity: existingItem.quantity + 1,
+      );
+      state = updatedCart;
+    }
     _persistCart();
   }
 
@@ -37,6 +58,24 @@ class CartViewModel extends Notifier<List<CartItemModel>> {
     if (index < 0 || index >= state.length) return;
     final updatedCart = [...state]..removeAt(index);
     state = updatedCart;
+    _persistCart();
+  }
+
+  void updateQuantity(int productId, int quantity) {
+    final itemIndex = state.indexWhere((item) => item.id == productId);
+    if (itemIndex == -1) return;
+
+    if (quantity <= 0) {
+      final updatedCart = [...state]..removeAt(itemIndex);
+      state = updatedCart;
+    } else {
+      if (state[itemIndex].quantity == quantity) return;
+      final updatedCart = [...state];
+      updatedCart[itemIndex] = updatedCart[itemIndex].copyWith(
+        quantity: quantity,
+      );
+      state = updatedCart;
+    }
     _persistCart();
   }
 

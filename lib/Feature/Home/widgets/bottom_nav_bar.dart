@@ -22,6 +22,7 @@ class BottomNavBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(bottomNavIndexProvider);
+    final compact = MediaQuery.sizeOf(context).width < 360;
 
     return NavigationBar(
       selectedIndex: selectedIndex,
@@ -32,7 +33,9 @@ class BottomNavBar extends ConsumerWidget {
       height: 72,
       backgroundColor: Theme.of(context).colorScheme.surface,
       indicatorColor: AppColors.lightGreen.withValues(alpha: 0.18),
-      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      labelBehavior: compact
+          ? NavigationDestinationLabelBehavior.onlyShowSelected
+          : NavigationDestinationLabelBehavior.alwaysShow,
       destinations: const [
         NavigationDestination(
           icon: Icon(Icons.home_outlined),

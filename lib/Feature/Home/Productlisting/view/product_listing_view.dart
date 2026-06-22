@@ -19,15 +19,18 @@ class ProductListingView extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Text(
-              'Popular Products',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
+            Expanded(
+              child: Text(
+                'Popular Products',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
-            const Spacer(),
             TextButton(
               onPressed: () {},
               style: TextButton.styleFrom(foregroundColor: AppColors.darkGreen),
@@ -171,18 +174,6 @@ class _ProductCard extends StatelessWidget {
                                 color: Color(0xFF9A9E9A),
                                 size: 42,
                               ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 7,
-                      top: 7,
-                      child: IconButton(
-                        onPressed: () {},
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(
-                          Icons.favorite_border_rounded,
-                          color: Color(0xFF7E848B),
                         ),
                       ),
                     ),

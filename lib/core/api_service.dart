@@ -1,5 +1,8 @@
 import 'package:click_shop/core/app_constants.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
 
 class ApiService {
   ApiService({Dio? dio})

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final productDetailsRepositoryProvider = Provider<ProductDetailsRepository>((
   ref,
 ) {
-  return ProductDetailsRepository(ApiService());
+  return ProductDetailsRepository(ref.watch(apiServiceProvider));
 });
 
 class ProductDetailsRepository {

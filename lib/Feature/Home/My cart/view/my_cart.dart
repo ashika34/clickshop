@@ -5,6 +5,7 @@ import 'package:click_shop/config/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:input_quantity/input_quantity.dart';
 
 class MyCart extends ConsumerWidget {
   const MyCart({super.key});
@@ -31,7 +32,13 @@ class MyCart extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          onPressed: context.pop,
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.home);
+            }
+          },
           icon: const Icon(Icons.arrow_back_rounded),
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -57,6 +64,9 @@ class MyCart extends ConsumerWidget {
                       onDelete: () => ref
                           .read(cartViewModelProvider.notifier)
                           .removeAt(index),
+                      onQuantityChanged: (quantity) => ref
+                          .read(cartViewModelProvider.notifier)
+                          .updateQuantity(items[index].id, quantity),
                     ),
                   ),
                 ),
@@ -67,10 +77,15 @@ class MyCart extends ConsumerWidget {
 }
 
 class _CartItemCard extends StatelessWidget {
-  const _CartItemCard({required this.item, required this.onDelete});
+  const _CartItemCard({
+    required this.item,
+    required this.onDelete,
+    required this.onQuantityChanged,
+  });
 
   final CartItemModel item;
   final VoidCallback onDelete;
+  final ValueChanged<int> onQuantityChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -151,19 +166,71 @@ class _CartItemCard extends StatelessWidget {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  InputQty.int(
+                    key: ValueKey('${item.id}-${item.quantity}'),
+                    initVal: item.quantity,
+                    minVal: 0,
+                    maxVal: 9999,
+                    steps: 1,
+                    onQtyChanged: (value) =>
+                        onQuantityChanged((value as num).toInt()),
+                    messageBuilder: (minVal, maxVal, value) =>
+                        const SizedBox.shrink(),
+                    qtyFormProps: const QtyFormProps(
+                      enableTyping: false,
+                      showCursor: false,
+                      style: TextStyle(
+                        color: AppColors.darkGreen,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    decoration: QtyDecorationProps(
+                      width: 2,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      btnColor: AppColors.darkGreen,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFE8ECE8)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: AppColors.darkGreen,
+                        ),
+                      ),
+                      minusButtonConstrains: const BoxConstraints.tightFor(
+                        width: 30,
+                        height: 32,
+                      ),
+                      plusButtonConstrains: const BoxConstraints.tightFor(
+                        width: 30,
+                        height: 32,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            IconButton(
-              tooltip: 'Remove from cart',
-              onPressed: onDelete,
-              visualDensity: VisualDensity.compact,
-              constraints: const BoxConstraints.tightFor(width: 36, height: 36),
-              icon: const Icon(
-                Icons.delete_outline_rounded,
-                color: Colors.black,
-                size: 23,
-              ),
+            Column(
+              children: [
+                IconButton(
+                  tooltip: 'Remove from cart',
+                  onPressed: onDelete,
+                  visualDensity: VisualDensity.compact,
+                  constraints: const BoxConstraints.tightFor(
+                    width: 36,
+                    height: 36,
+                  ),
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.black,
+                    size: 23,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -213,7 +280,7 @@ class _OrderSummary extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: FilledButton(
-                        onPressed: () {},
+                        onPressed: () => context.push(AppRoutes.checkout),
                         style: FilledButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,

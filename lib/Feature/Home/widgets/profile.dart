@@ -1,4 +1,5 @@
 import 'package:click_shop/Feature/Home/widgets/themechange.dart';
+import 'package:click_shop/Feature/LoginScreen/Viewmodel/login_view_model.dart';
 import 'package:click_shop/config/app_route.dart';
 import 'package:click_shop/config/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class ProfileDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final darkMode = ref.watch(drawerDarkModeProvider);
+    final loginState = ref.watch(loginViewModelProvider);
     final screenWidth = MediaQuery.sizeOf(context).width;
     final drawerWidth = (screenWidth * 0.86).clamp(300.0, 410.0);
 
@@ -26,7 +28,10 @@ class ProfileDrawer extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const _ProfileHeader(),
+            _ProfileHeader(
+              displayName: loginState.displayName,
+              email: loginState.email,
+            ),
             const SizedBox(height: 20),
             _DrawerMenuItem(
               icon: Icons.home_outlined,
@@ -81,10 +86,15 @@ class ProfileDrawer extends ConsumerWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader();
+  const _ProfileHeader({required this.displayName, required this.email});
+
+  final String displayName;
+  final String email;
 
   @override
   Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 400;
+    final avatarSize = compact ? 76.0 : 92.0;
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 34, 20, 30),
       decoration: BoxDecoration(
@@ -100,8 +110,8 @@ class _ProfileHeader extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 92,
-            height: 92,
+            width: avatarSize,
+            height: avatarSize,
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -115,41 +125,39 @@ class _ProfileHeader extends StatelessWidget {
                 ),
               ],
             ),
-            child: const CircleAvatar(
-              backgroundColor: Color(0xFFE7F5E9),
+            child: CircleAvatar(
+              backgroundColor: const Color(0xFFE7F5E9),
               child: Icon(
                 Icons.person_rounded,
-                size: 52,
+                size: compact ? 42 : 52,
                 color: AppColors.darkGreen,
               ),
             ),
           ),
-          const SizedBox(width: 18),
+          SizedBox(width: compact ? 12 : 18),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 5,
                   children: [
-                    Flexible(
-                      child: Text(
-                        'Ashika',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 21,
-                          fontWeight: FontWeight.w800,
-                        ),
+                    Text(
+                      displayName,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: compact ? 19 : 21,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    SizedBox(width: 8),
                     const _PremiumBadge(),
                   ],
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'ashika@email.com',
+                  email.isEmpty ? 'Welcome to Click Shop' : email,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

@@ -4,7 +4,7 @@ import 'package:click_shop/core/app_constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
-  return CategoryRepository(ApiService());
+  return CategoryRepository(ref.watch(apiServiceProvider));
 });
 
 class CategoryRepository {
